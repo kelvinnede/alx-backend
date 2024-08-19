@@ -1,28 +1,10 @@
 #!/usr/bin/env python3
 """
-Server class to paginate a database of popular baby names.
+function named index_range that takes two integer arguments page and page_size
 """
-
 import csv
-from typing import List, Tuple
-
-
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    """
-    Return a tuple containing a start index and
-    an end index corresponding to the range of indexes
-    to return in a list for the given pagination parameters.
-
-    Args:
-        page (int): The current page number (1-indexed).
-        page_size (int): The number of items per page.
-
-    Returns:
-        Tuple[int, int]: A tuple containing the start index and end index.
-    """
-    start = (page - 1) * page_size
-    end = page * page_size
-    return start, end
+import math
+from typing import List
 
 
 class Server:
@@ -46,22 +28,28 @@ class Server:
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
         """
-        Return a page of data from the dataset based on pagination parameters.
-
-        Args:
-            page (int): The page number to retrieve (1-indexed).
-            page_size (int): The number of items per page.
-
-        Returns:
-            List[List]: The list of rows corresponding to the requested page.
+        Use assert to verify that both arguments are integers greater than 0
+        Use index_range to find the correct indexes
+        to paginate the dataset correctly
+        and return the appropriate page of the dataset
+        (i.e. the correct list of rows)
         """
-        assert isinstance(page, int) and page > 0,
-        assert isinstance(page_size, int) and page_size > 0,
+        assert (isinstance(page, int) and isinstance(page_size, int)
+                and page > 0 and page_size > 0)
+        range = index_range(page, page_size)
+        self.dataset()
+        return self.__dataset[range[0]:range[1]]
 
-        start_index, end_index = index_range(page, page_size)
-        dataset = self.dataset()
 
-        if start_index >= len(dataset):
-            return []
-
-        return dataset[start_index:end_index]
+def index_range(page, page_size):
+    """
+    function named index_range that takes two integer arguments:
+    page and page_size.
+    The function should return a tuple of size two containing:
+    a start index and an end index corresponding to
+    the range of indexes to return in a list
+    for those particular pagination parameters.
+    Page numbers are 1-indexed, i.e. the first page is page 1.
+    """
+    previous = (page - 1) * page_size
+    return (previous, previous + page_size)
